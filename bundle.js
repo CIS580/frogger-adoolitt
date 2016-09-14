@@ -46,6 +46,9 @@ function render(elapsedTime, ctx) {
   ctx.fillStyle = "lightblue";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   player.render(elapsedTime, ctx);
+ctx.fillStyle = "black";
+  ctx.fillText("Score:" + player.getScore(), canvas.width - 80, 10);
+  ctx.fillText("Current level:" + player.getLevel(),10, 10);
 }
 
 },{"./game.js":2,"./player.js":3}],2:[function(require,module,exports){
@@ -131,13 +134,29 @@ function Player(position) {
   this.spritesheet.src = encodeURI('assets/PlayerSprite2.png');
   this.timer = 0;
   this.frame = 0;
+  this.startPositionX = position.x;
+  this.startPositionX = position.y;
+  this.lives = 3;
+  this.score = 0;
+  this.level = 1;
 }
 
+
+Player.prototype.getLevel = function ()
+{
+  return this.level;
+}
+
+Player.prototype.getScore = function ()
+{
+  return this.score;
+}
 /**
  * @function updates the player object
  * {DOMHighResTimeStamp} time the elapsed time since the last frame
  */
 Player.prototype.update = function(time) {
+// TODO: Implement your player's update by state
   switch(this.state) {
     case "idle":
       this.timer += time;
@@ -147,7 +166,29 @@ Player.prototype.update = function(time) {
         if(this.frame > 3) this.frame = 0;
       }
       break;
-    // TODO: Implement your player's update by state
+      case "move":
+        this.moveFrog();
+        this.timer += time;
+        if(this.timer > MS_PER_FRAME)
+         {
+          this.timer = 0;
+          this.frame += 1;
+          if(this.frame > 5) this.frame = 0;
+        }
+        break;
+      case "dead":
+        this.x = this.startPositionX;
+        this.Y = this.startPositionY;
+        this.lives--;
+        break;
+    case "win":
+        this.score += 10;
+        this.level++;
+        this.x = this.startPositionX;
+        this.y = this.startPositionY;
+      break;
+    case "gameOver":
+    break;
   }
 }
 
@@ -170,6 +211,41 @@ Player.prototype.render = function(time, ctx) {
       break;
     // TODO: Implement your player's redering according to state
   }
+}
+
+Player.prototype.moveFrog = function(e) {
+	switch(e.which){
+		case 38: this.moveUp();
+             this.state = "move";
+			break;
+		case 40: this.moveDown();
+		 break;
+		case 39: this.moveRight();
+			break;
+		case 37 : this.moveLeft();
+			break;
+		default : console.log('aqui');
+	}
+}
+
+Player.prototype.moveUp = function() {
+	this.y -= 1;
+  this.state = "idle";
+}
+
+Player.prototype.moveDown = function () {
+	this.y += 1;
+  this.state = "idle";
+}
+
+Player.prototype.moveLeft = function () {
+	this.x -= 1;
+  this.state = "idle";
+}
+
+Player.prototype.moveRight = function () {
+	this.x += 1;
+  this.state = "idle";
 }
 
 },{}]},{},[1]);

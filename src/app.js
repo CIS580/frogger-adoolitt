@@ -45,4 +45,7 @@ function render(elapsedTime, ctx) {
   ctx.fillStyle = "lightblue";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   player.render(elapsedTime, ctx);
+ctx.fillStyle = "black";
+  ctx.fillText("Score:" + player.getScore(), canvas.width - 80, 10);
+  ctx.fillText("Current level:" + player.getLevel(),10, 10);
 }
