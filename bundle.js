@@ -4,12 +4,20 @@
 /* Classes */
 const Game = require('./game.js');
 const Player = require('./player.js');
-
+const MiniCar = require('./miniCar.js');
+const RacerCar = require('./racerCar');
+const Sedan = require('./sedan');
+const Pickup = require('./pickup');
 /* Global variables */
 var canvas = document.getElementById('screen');
 var game = new Game(canvas, update, render);
-var player = new Player({x: 0, y: 240})
-
+var player = new Player({x: 0, y: 240});
+var miniCar = new MiniCar({x: 70, y:0});
+var racerCar = new RacerCar({x: 150, y:0});
+var sedan = new Sedan({x:300 , y: canvas.height - 60});
+var pickup = new Pickup({x:380, y:canvas.height - 60});
+var background = new Image()
+background.src =  encodeURI('assets/background.png');
 /**
  * @function masterLoop
  * Advances the game in sync with the refresh rate of the screen
@@ -32,6 +40,10 @@ masterLoop(performance.now());
  */
 function update(elapsedTime) {
   player.update(elapsedTime);
+  miniCar.update(elapsedTime, canvas.width);
+  racerCar.update(elapsedTime, canvas.width);
+  sedan.update(elapsedTime, canvas.width);
+  pickup.update(elapsedTime, canvas.width);
   // TODO: Update the game objects
 }
 
@@ -43,15 +55,20 @@ function update(elapsedTime) {
   * @param {CanvasRenderingContext2D} ctx the context to render to
   */
 function render(elapsedTime, ctx) {
-  ctx.fillStyle = "lightblue";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  //ctx.fillStyle = "lightblue";
+  //ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(background, 0, 0);
   player.render(elapsedTime, ctx);
+  miniCar.render(elapsedTime, ctx);
+  racerCar.render(elapsedTime, ctx);
+  sedan.render(elapsedTime,  ctx);
+  pickup.render(elapsedTime, ctx);
 ctx.fillStyle = "black";
   ctx.fillText("Score:" + player.getScore(), canvas.width - 80, 10);
   ctx.fillText("Current level:" + player.getLevel(),10, 10);
 }
 
-},{"./game.js":2,"./player.js":3}],2:[function(require,module,exports){
+},{"./game.js":2,"./miniCar.js":3,"./pickup":4,"./player.js":5,"./racerCar":6,"./sedan":7}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -110,6 +127,112 @@ Game.prototype.loop = function(newTime) {
 }
 
 },{}],3:[function(require,module,exports){
+"use strict";
+
+/**
+ * @module exports the Game class
+ */
+module.exports = exports = MiniCar;
+/**
+ * @constructor miniCar
+ * Creates a new miniCar object
+ * @param {Postition} position object specifying an x and y
+ */
+function MiniCar(position) {
+  this.x = position.x;
+  this.y = position.y;
+  this.width  = 64;
+  this.height = 64;
+  this.spritesheet  = new Image();
+  this.spritesheet.src = encodeURI('assets/cars_mini.svg');
+  this.timer = 0;
+  this.frame = 0;
+  this.speed = 2;
+}
+
+/**
+ * @function updates the miniCar object
+ * {DOMHighResTimeStamp} time the elapsed time since the last frame
+ */
+MiniCar.prototype.update = function(time, y) {
+// TODO: Implement your player's update by state
+      this.y += this.speed;
+      if(this.y > y)
+      {
+        this.y = 0;
+      }
+}
+
+MiniCar.prototype.IncreaseSpeed = function()
+{
+  return speed += (level * 1);
+}
+
+MiniCar.prototype.render = function(time, ctx) {
+      ctx.drawImage(
+        // image
+        this.spritesheet,
+        // source rectangle
+        this.frame * 64, 64, this.width, this.height,
+        // destination rectangle
+        this.x, this.y, this.width, this.height
+      );
+}
+
+},{}],4:[function(require,module,exports){
+"use strict";
+
+/**
+ * @module exports the Game class
+ */
+module.exports = exports = Pickup;
+/**
+ * @constructor miniCar
+ * Creates a new miniCar object
+ * @param {Postition} position object specifying an x and y
+ */
+function Pickup(position) {
+  this.x = position.x;
+  this.y = position.y;
+  this.width  = 64;
+  this.height = 64;
+  this.spritesheet  = new Image();
+  this.spritesheet.src = encodeURI('assets/TRBRYcars [Converted] pickup.svg');
+  this.timer = 0;
+  this.frame = 0;
+  this.speed = 2;
+}
+
+/**
+ * @function updates the miniCar object
+ * {DOMHighResTimeStamp} time the elapsed time since the last frame
+ */
+Pickup.prototype.update = function(time, y) {
+// TODO: Implement your player's update by state
+      this.y -= this.speed;
+      if(this.y < 0)
+      {
+        this.y = (y - this.height);
+      }
+}
+
+Pickup.prototype.IncreaseSpeed = function()
+{
+  return speed += (level * 1);
+}
+
+Pickup.prototype.render = function(time, ctx) {
+      ctx.drawImage(
+        // image
+        this.spritesheet,
+        // source rectangle
+        this.frame * 64, 64, this.width, this.height,
+        // destination rectangle
+        this.x, this.y, this.width, this.height
+      );
+}
+
+},{}],5:[function(require,module,exports){
 "use strict";
 
 const MS_PER_FRAME = 1000/8;
@@ -210,6 +333,14 @@ Player.prototype.render = function(time, ctx) {
       );
       break;
     // TODO: Implement your player's redering according to state
+    case "moving":
+      break;
+    case "dead":
+      break;
+    case "win":
+      break;
+    case "gameOver":
+      break
   }
 }
 
@@ -246,6 +377,112 @@ Player.prototype.moveLeft = function () {
 Player.prototype.moveRight = function () {
 	this.x += 1;
   this.state = "idle";
+}
+
+},{}],6:[function(require,module,exports){
+"use strict";
+
+/**
+ * @module exports the Game class
+ */
+module.exports = exports = RacerCar;
+/**
+ * @constructor miniCar
+ * Creates a new miniCar object
+ * @param {Postition} position object specifying an x and y
+ */
+function RacerCar(position) {
+  this.x = position.x;
+  this.y = position.y;
+  this.width  = 64;
+  this.height = 64;
+  this.spritesheet  = new Image();
+  this.spritesheet.src = encodeURI('assets/cars_racer.svg');
+  this.timer = 0;
+  this.frame = 0;
+  this.speed = 5;
+}
+
+/**
+ * @function updates the miniCar object
+ * {DOMHighResTimeStamp} time the elapsed time since the last frame
+ */
+RacerCar.prototype.update = function(time, y) {
+// TODO: Implement your player's update by state
+      this.y += this.speed;
+      if(this.y > y)
+      {
+        this.y = 0;
+      }
+}
+
+RacerCar.prototype.IncreaseSpeed = function()
+{
+  return speed += (level * 1.5);
+}
+
+RacerCar.prototype.render = function(time, ctx) {
+      ctx.drawImage(
+        // image
+        this.spritesheet,
+        // source rectangle
+        this.frame * 64, 64, this.width, this.height,
+        // destination rectangle
+        this.x, this.y, this.width, this.height
+      );
+}
+
+},{}],7:[function(require,module,exports){
+"use strict";
+
+/**
+ * @module exports the Game class
+ */
+module.exports = exports = Sedan;
+/**
+ * @constructor miniCar
+ * Creates a new miniCar object
+ * @param {Postition} position object specifying an x and y
+ */
+function Sedan(position) {
+  this.x = position.x;
+  this.y = position.y;
+  this.width  = 64;
+  this.height = 64;
+  this.spritesheet  = new Image();
+  this.spritesheet.src = encodeURI('assets/TRBRYcars [Converted] sedan.svg');
+  this.timer = 0;
+  this.frame = 0;
+  this.speed = 2 * Math.random();
+}
+
+/**
+ * @function updates the miniCar object
+ * {DOMHighResTimeStamp} time the elapsed time since the last frame
+ */
+Sedan.prototype.update = function(time, y) {
+// TODO: Implement your player's update by state
+      this.y -= this.speed;
+      if(this.y < 0)
+      {
+        this.y = (y - this.height);
+      }
+}
+
+Sedan.prototype.IncreaseSpeed = function()
+{
+  return speed += (level * 1);
+}
+
+Sedan.prototype.render = function(time, ctx) {
+      ctx.drawImage(
+        // image
+        this.spritesheet,
+        // source rectangle
+        this.frame * 64, 64, this.width, this.height,
+        // destination rectangle
+        this.x, this.y, this.width, this.height
+      );
 }
 
 },{}]},{},[1]);

@@ -98,6 +98,14 @@ Player.prototype.render = function(time, ctx) {
       );
       break;
     // TODO: Implement your player's redering according to state
+    case "moving":
+      break;
+    case "dead":
+      break;
+    case "win":
+      break;
+    case "gameOver":
+      break
   }
 }
 
