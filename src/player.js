@@ -113,6 +113,12 @@ Player.prototype.render = function(time, ctx) {
       break;
     // TODO: Implement your player's redering according to state
     case "moving":
+    // image
+    this.spritesheet,
+    // source rectangle
+    this.frame * 64, 64, this.width, this.height,
+    // destination rectangle
+    this.x, this.y, this.width, this.height
       break;
     case "dead":
       break;
