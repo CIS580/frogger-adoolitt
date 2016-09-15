@@ -35,6 +35,16 @@ Player.prototype.getLevel = function ()
   return this.level;
 }
 
+Player.prototype.getState = function()
+{
+  return this.state;
+}
+
+Player.prototype.resetIdle = function(idle)
+{
+  return this.state = idle;
+}
+
 Player.prototype.getScore = function ()
 {
   return this.score;
@@ -45,6 +55,10 @@ Player.prototype.getScore = function ()
  */
 Player.prototype.update = function(time) {
 // TODO: Implement your player's update by state
+  if(this.x >= 660)
+  {
+    this.state = "win";
+  }
   switch(this.state) {
     case "idle":
       this.timer += time;

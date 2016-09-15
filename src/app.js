@@ -7,7 +7,9 @@ const MiniCar = require('./miniCar.js');
 const RacerCar = require('./racerCar');
 const Sedan = require('./sedan');
 const Pickup = require('./pickup');
+const LilyPad = require('./lilyPad');
 /* Global variables */
+var offSet = 64;
 var canvas = document.getElementById('screen');
 var game = new Game(canvas, update, render);
 var player = new Player({x: 0, y: 240});
@@ -17,6 +19,43 @@ var sedan = new Sedan({x:300 , y: canvas.height - 60});
 var pickup = new Pickup({x:380, y:canvas.height - 60});
 var background = new Image()
 background.src =  encodeURI('assets/background.png');
+var lilyPadRow1 = [];
+var lilyPadRow2 = [];
+var lilyPadRow3 = [];
+for(var i=0; i < 8; i++)
+{
+  if(i != 1 && i != 3 && i != 5)
+  {
+    lilyPadRow1.push(new LilyPad({
+      x: 520,
+      y: 0 + (offSet * i)
+    }));
+  }
+}
+
+for(var i=0; i < 7; i++)
+{
+  if(i != 3)
+  {
+    lilyPadRow2.push(new LilyPad({
+      x: 570,
+      y: 0 + (offSet * i)
+    }));
+  }
+}
+
+for(var i=0; i < 7; i++)
+{
+  if(i != 0 && i != 2 && i != 3 && i != 5)
+  {
+    lilyPadRow3.push(new LilyPad({
+      x: 620,
+      y: 0 + (offSet * i)
+    }));
+  }
+}
+
+var resetIdle = "idle";
 /**
  * @function masterLoop
  * Advances the game in sync with the refresh rate of the screen
@@ -43,6 +82,23 @@ function update(elapsedTime) {
   racerCar.update(elapsedTime, canvas.width);
   sedan.update(elapsedTime, canvas.width);
   pickup.update(elapsedTime, canvas.width);
+  lilyPadRow1.forEach(function(lilyPad) { lilyPad.update(elapsedTime , canvas.width);});
+  lilyPadRow2.forEach(function(lilyPad) { lilyPad.update(elapsedTime , canvas.width);});
+  lilyPadRow3.forEach(function(lilyPad) { lilyPad.update(elapsedTime , canvas.width);});
+
+  if(player.getState() == "win")
+  {
+    miniCar.IncreaseSpeed(player.getLevel());
+    racerCar.IncreaseSpeed(player.getLevel());
+    sedan.IncreaseSpeed(player.getLevel());
+    pickup.IncreaseSpeed(player.getLevel());
+
+    lilyPadRow1.IncreaseSpeed(player.getLevel());
+    lilyPadRow2.IncreaseSpeed(player.getLevel());
+    lilyPadRow3.IncreaseSpeed(player.getLevel());
+
+    player.setState(resetIdle);
+  }
   // TODO: Update the game objects
 }
 
@@ -62,6 +118,9 @@ function render(elapsedTime, ctx) {
   racerCar.render(elapsedTime, ctx);
   sedan.render(elapsedTime,  ctx);
   pickup.render(elapsedTime, ctx);
+  lilyPadRow1.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
+  lilyPadRow2.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
+  lilyPadRow3.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
 ctx.fillStyle = "black";
   ctx.fillText("Score:" + player.getScore(), canvas.width - 80, 10);
   ctx.fillText("Current level:" + player.getLevel(),10, 10);

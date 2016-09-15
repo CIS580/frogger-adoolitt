@@ -8,7 +8,9 @@ const MiniCar = require('./miniCar.js');
 const RacerCar = require('./racerCar');
 const Sedan = require('./sedan');
 const Pickup = require('./pickup');
+const LilyPad = require('./lilyPad');
 /* Global variables */
+var offSet = 64;
 var canvas = document.getElementById('screen');
 var game = new Game(canvas, update, render);
 var player = new Player({x: 0, y: 240});
@@ -18,6 +20,43 @@ var sedan = new Sedan({x:300 , y: canvas.height - 60});
 var pickup = new Pickup({x:380, y:canvas.height - 60});
 var background = new Image()
 background.src =  encodeURI('assets/background.png');
+var lilyPadRow1 = [];
+var lilyPadRow2 = [];
+var lilyPadRow3 = [];
+for(var i=0; i < 8; i++)
+{
+  if(i != 1 && i != 3 && i != 5)
+  {
+    lilyPadRow1.push(new LilyPad({
+      x: 520,
+      y: 0 + (offSet * i)
+    }));
+  }
+}
+
+for(var i=0; i < 7; i++)
+{
+  if(i != 3)
+  {
+    lilyPadRow2.push(new LilyPad({
+      x: 570,
+      y: 0 + (offSet * i)
+    }));
+  }
+}
+
+for(var i=0; i < 7; i++)
+{
+  if(i != 0 && i != 2 && i != 3 && i != 5)
+  {
+    lilyPadRow3.push(new LilyPad({
+      x: 620,
+      y: 0 + (offSet * i)
+    }));
+  }
+}
+
+var resetIdle = "idle";
 /**
  * @function masterLoop
  * Advances the game in sync with the refresh rate of the screen
@@ -44,6 +83,23 @@ function update(elapsedTime) {
   racerCar.update(elapsedTime, canvas.width);
   sedan.update(elapsedTime, canvas.width);
   pickup.update(elapsedTime, canvas.width);
+  lilyPadRow1.forEach(function(lilyPad) { lilyPad.update(elapsedTime , canvas.width);});
+  lilyPadRow2.forEach(function(lilyPad) { lilyPad.update(elapsedTime , canvas.width);});
+  lilyPadRow3.forEach(function(lilyPad) { lilyPad.update(elapsedTime , canvas.width);});
+
+  if(player.getState() == "win")
+  {
+    miniCar.IncreaseSpeed(player.getLevel());
+    racerCar.IncreaseSpeed(player.getLevel());
+    sedan.IncreaseSpeed(player.getLevel());
+    pickup.IncreaseSpeed(player.getLevel());
+
+    lilyPadRow1.IncreaseSpeed(player.getLevel());
+    lilyPadRow2.IncreaseSpeed(player.getLevel());
+    lilyPadRow3.IncreaseSpeed(player.getLevel());
+
+    player.setState(resetIdle);
+  }
   // TODO: Update the game objects
 }
 
@@ -63,12 +119,15 @@ function render(elapsedTime, ctx) {
   racerCar.render(elapsedTime, ctx);
   sedan.render(elapsedTime,  ctx);
   pickup.render(elapsedTime, ctx);
+  lilyPadRow1.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
+  lilyPadRow2.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
+  lilyPadRow3.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
 ctx.fillStyle = "black";
   ctx.fillText("Score:" + player.getScore(), canvas.width - 80, 10);
   ctx.fillText("Current level:" + player.getLevel(),10, 10);
 }
 
-},{"./game.js":2,"./miniCar.js":3,"./pickup":4,"./player.js":5,"./racerCar":6,"./sedan":7}],2:[function(require,module,exports){
+},{"./game.js":2,"./lilyPad":3,"./miniCar.js":4,"./pickup":5,"./player.js":6,"./racerCar":7,"./sedan":8}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -132,6 +191,77 @@ Game.prototype.loop = function(newTime) {
 /**
  * @module exports the Game class
  */
+module.exports = exports = LilyPad;
+/**
+ * @constructor miniCar
+ * Creates a new miniCar object
+ * @param {Postition} position object specifying an x and y
+ */
+function LilyPad(position) {
+  this.state = "aboveWater";
+  this.x = position.x;
+  this.y = position.y;
+  this.width  = 64;
+  this.height = 64;
+  this.Lily  = new Image();
+  this.Lily.src = encodeURI('assets/lilyPad.png');
+  this.timer = 0;
+  this.frame = 0;
+  this.aboveWater = 4000;
+  this.belowWater = 2000;
+}
+
+/**
+ * @function updates the miniCar object
+ * {DOMHighResTimeStamp} time the elapsed time since the last frame
+ */
+LilyPad.prototype.update = function(time, y) {
+// TODO: Implement your player's update by state
+this.timer += time;
+switch(this.state) {
+  case "aboveWater":
+    if(this.timer >= this.aboveWater)
+    {
+      this.state = "belowWater";
+      this.timer = 0;
+    }
+    break;
+  case "belowWater":
+  if(this.timer >= this.aboveWater)
+  {
+    this.state = "aboveWater";
+    this.timer = 0;
+  }
+    break;
+  }
+}
+
+LilyPad.prototype.decreaseTime = function(level)
+{
+  this.aboveWater -= (level * 1.5);
+  this.belowWater -= (level * 1.5);
+}
+
+LilyPad.prototype.render = function(time, ctx) {
+      if(this.state == "aboveWater")
+      {
+        ctx.drawImage(
+          // image
+          this.Lily,
+          // source rectangle
+          //this.frame * 64, 64, this.width, this.height,
+          // destination rectangle
+          this.x, this.y, this.width, this.height
+        )
+    }
+}
+
+},{}],4:[function(require,module,exports){
+"use strict";
+
+/**
+ * @module exports the Game class
+ */
 module.exports = exports = MiniCar;
 /**
  * @constructor miniCar
@@ -179,7 +309,7 @@ MiniCar.prototype.render = function(time, ctx) {
       );
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 /**
@@ -232,7 +362,7 @@ Pickup.prototype.render = function(time, ctx) {
       );
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 const MS_PER_FRAME = 1000/8;
@@ -270,6 +400,16 @@ Player.prototype.getLevel = function ()
   return this.level;
 }
 
+Player.prototype.getState = function()
+{
+  return this.state;
+}
+
+Player.prototype.resetIdle = function(idle)
+{
+  return this.state = idle;
+}
+
 Player.prototype.getScore = function ()
 {
   return this.score;
@@ -280,6 +420,10 @@ Player.prototype.getScore = function ()
  */
 Player.prototype.update = function(time) {
 // TODO: Implement your player's update by state
+  if(this.x >= 660)
+  {
+    this.state = "win";
+  }
   switch(this.state) {
     case "idle":
       this.timer += time;
@@ -379,7 +523,7 @@ Player.prototype.moveRight = function () {
   this.state = "idle";
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 /**
@@ -432,7 +576,7 @@ RacerCar.prototype.render = function(time, ctx) {
       );
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 /**
