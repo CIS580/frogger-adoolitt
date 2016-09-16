@@ -3,17 +3,17 @@
 /* Classes */
 const Game = require('./game.js');
 const Player = require('./player.js');
-const MiniCar = require('./miniCar.js');
-const RacerCar = require('./racerCar');
-const Sedan = require('./sedan');
-const Pickup = require('./pickup');
-const LilyPad = require('./lilyPad');
+//const MiniCar = require('./miniCar.js');
+//const RacerCar = require('./racerCar');
+//const Sedan = require('./sedan');
+//const Pickup = require('./pickup');
+//const LilyPad = require('./lilyPad');
 /* Global variables */
 var offSet = 64;
 var canvas = document.getElementById('screen');
 var game = new Game(canvas, update, render);
 var player = new Player({x: 0, y: 240});
-var miniCar = new MiniCar({x: 70, y:0});
+/*var miniCar = new MiniCar({x: 70, y:0});
 var racerCar = new RacerCar({x: 150, y:0});
 var sedan = new Sedan({x:300 , y: canvas.height - 60});
 var pickup = new Pickup({x:380, y:canvas.height - 60});
@@ -53,7 +53,7 @@ for(var i=0; i < 7; i++)
       y: 0 + (offSet * i)
     }));
   }
-}
+}*/
 
 var resetIdle = "idle";
 /**
@@ -78,6 +78,7 @@ masterLoop(performance.now());
  */
 function update(elapsedTime) {
   player.update(elapsedTime);
+  /*
   miniCar.update(elapsedTime, canvas.width);
   racerCar.update(elapsedTime, canvas.width);
   sedan.update(elapsedTime, canvas.width);
@@ -99,6 +100,7 @@ function update(elapsedTime) {
 
     player.setState(resetIdle);
   }
+  */
   // TODO: Update the game objects
 }
 
@@ -110,18 +112,18 @@ function update(elapsedTime) {
   * @param {CanvasRenderingContext2D} ctx the context to render to
   */
 function render(elapsedTime, ctx) {
-  //ctx.fillStyle = "lightblue";
-  //ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(background, 0, 0);
+  ctx.fillStyle = "lightblue";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  //ctx.drawImage(background, 0, 0);
   player.render(elapsedTime, ctx);
-  miniCar.render(elapsedTime, ctx);
+  /*miniCar.render(elapsedTime, ctx);
   racerCar.render(elapsedTime, ctx);
   sedan.render(elapsedTime,  ctx);
   pickup.render(elapsedTime, ctx);
   lilyPadRow1.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
   lilyPadRow2.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
   lilyPadRow3.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
-ctx.fillStyle = "black";
+*/ctx.fillStyle = "black";
   ctx.fillText("Score:" + player.getScore(), canvas.width - 80, 10);
   ctx.fillText("Current level:" + player.getLevel(),10, 10);
 }

@@ -27,6 +27,22 @@ function Player(position) {
   this.lives = 3;
   this.score = 0;
   this.level = 1;
+
+  var self = this;
+  window.onkeydown = function(e) {
+  	switch(e.which){
+  		case 38: self.moveUp();
+               self.state = "move";
+  			break;
+  		case 40: self.moveDown();
+  		 break;
+  		case 39: self.moveRight();
+  			break;
+  		case 37 : this.moveLeft();
+  			break;
+  		default : console.log('aqui');
+  	}
+  }
 }
 
 
@@ -129,20 +145,8 @@ Player.prototype.render = function(time, ctx) {
   }
 }
 
-Player.prototype.moveFrog = function(e) {
-	switch(e.which){
-		case 38: this.moveUp();
-             this.state = "move";
-			break;
-		case 40: this.moveDown();
-		 break;
-		case 39: this.moveRight();
-			break;
-		case 37 : this.moveLeft();
-			break;
-		default : console.log('aqui');
-	}
-}
+
+
 
 Player.prototype.moveUp = function() {
 	this.y -= 1;

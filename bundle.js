@@ -4,17 +4,17 @@
 /* Classes */
 const Game = require('./game.js');
 const Player = require('./player.js');
-const MiniCar = require('./miniCar.js');
-const RacerCar = require('./racerCar');
-const Sedan = require('./sedan');
-const Pickup = require('./pickup');
-const LilyPad = require('./lilyPad');
+//const MiniCar = require('./miniCar.js');
+//const RacerCar = require('./racerCar');
+//const Sedan = require('./sedan');
+//const Pickup = require('./pickup');
+//const LilyPad = require('./lilyPad');
 /* Global variables */
 var offSet = 64;
 var canvas = document.getElementById('screen');
 var game = new Game(canvas, update, render);
 var player = new Player({x: 0, y: 240});
-var miniCar = new MiniCar({x: 70, y:0});
+/*var miniCar = new MiniCar({x: 70, y:0});
 var racerCar = new RacerCar({x: 150, y:0});
 var sedan = new Sedan({x:300 , y: canvas.height - 60});
 var pickup = new Pickup({x:380, y:canvas.height - 60});
@@ -54,7 +54,7 @@ for(var i=0; i < 7; i++)
       y: 0 + (offSet * i)
     }));
   }
-}
+}*/
 
 var resetIdle = "idle";
 /**
@@ -79,6 +79,7 @@ masterLoop(performance.now());
  */
 function update(elapsedTime) {
   player.update(elapsedTime);
+  /*
   miniCar.update(elapsedTime, canvas.width);
   racerCar.update(elapsedTime, canvas.width);
   sedan.update(elapsedTime, canvas.width);
@@ -100,6 +101,7 @@ function update(elapsedTime) {
 
     player.setState(resetIdle);
   }
+  */
   // TODO: Update the game objects
 }
 
@@ -111,23 +113,23 @@ function update(elapsedTime) {
   * @param {CanvasRenderingContext2D} ctx the context to render to
   */
 function render(elapsedTime, ctx) {
-  //ctx.fillStyle = "lightblue";
-  //ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(background, 0, 0);
+  ctx.fillStyle = "lightblue";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  //ctx.drawImage(background, 0, 0);
   player.render(elapsedTime, ctx);
-  miniCar.render(elapsedTime, ctx);
+  /*miniCar.render(elapsedTime, ctx);
   racerCar.render(elapsedTime, ctx);
   sedan.render(elapsedTime,  ctx);
   pickup.render(elapsedTime, ctx);
   lilyPadRow1.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
   lilyPadRow2.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
   lilyPadRow3.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
-ctx.fillStyle = "black";
+*/ctx.fillStyle = "black";
   ctx.fillText("Score:" + player.getScore(), canvas.width - 80, 10);
   ctx.fillText("Current level:" + player.getLevel(),10, 10);
 }
 
-},{"./game.js":2,"./lilyPad":3,"./miniCar.js":4,"./pickup":5,"./player.js":6,"./racerCar":7,"./sedan":8}],2:[function(require,module,exports){
+},{"./game.js":2,"./player.js":3}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -188,183 +190,6 @@ Game.prototype.loop = function(newTime) {
 },{}],3:[function(require,module,exports){
 "use strict";
 
-/**
- * @module exports the Game class
- */
-module.exports = exports = LilyPad;
-/**
- * @constructor miniCar
- * Creates a new miniCar object
- * @param {Postition} position object specifying an x and y
- */
-function LilyPad(position) {
-  this.state = "aboveWater";
-  this.x = position.x;
-  this.y = position.y;
-  this.width  = 64;
-  this.height = 64;
-  this.Lily  = new Image();
-  this.Lily.src = encodeURI('assets/lilyPad.png');
-  this.timer = 0;
-  this.frame = 0;
-  this.aboveWater = 4000;
-  this.belowWater = 2000;
-}
-
-/**
- * @function updates the miniCar object
- * {DOMHighResTimeStamp} time the elapsed time since the last frame
- */
-LilyPad.prototype.update = function(time, y) {
-// TODO: Implement your player's update by state
-this.timer += time;
-switch(this.state) {
-  case "aboveWater":
-    if(this.timer >= this.aboveWater)
-    {
-      this.state = "belowWater";
-      this.timer = 0;
-    }
-    break;
-  case "belowWater":
-  if(this.timer >= this.aboveWater)
-  {
-    this.state = "aboveWater";
-    this.timer = 0;
-  }
-    break;
-  }
-}
-
-LilyPad.prototype.decreaseTime = function(level)
-{
-  this.aboveWater -= (level * 1.5);
-  this.belowWater -= (level * 1.5);
-}
-
-LilyPad.prototype.render = function(time, ctx) {
-      if(this.state == "aboveWater")
-      {
-        ctx.drawImage(
-          // image
-          this.Lily,
-          // source rectangle
-          //this.frame * 64, 64, this.width, this.height,
-          // destination rectangle
-          this.x, this.y, this.width, this.height
-        )
-    }
-}
-
-},{}],4:[function(require,module,exports){
-"use strict";
-
-/**
- * @module exports the Game class
- */
-module.exports = exports = MiniCar;
-/**
- * @constructor miniCar
- * Creates a new miniCar object
- * @param {Postition} position object specifying an x and y
- */
-function MiniCar(position) {
-  this.x = position.x;
-  this.y = position.y;
-  this.width  = 64;
-  this.height = 64;
-  this.spritesheet  = new Image();
-  this.spritesheet.src = encodeURI('assets/cars_mini.svg');
-  this.timer = 0;
-  this.frame = 0;
-  this.speed = 2;
-}
-
-/**
- * @function updates the miniCar object
- * {DOMHighResTimeStamp} time the elapsed time since the last frame
- */
-MiniCar.prototype.update = function(time, y) {
-// TODO: Implement your player's update by state
-      this.y += this.speed;
-      if(this.y > y)
-      {
-        this.y = 0;
-      }
-}
-
-MiniCar.prototype.IncreaseSpeed = function()
-{
-  return speed += (level * 1);
-}
-
-MiniCar.prototype.render = function(time, ctx) {
-      ctx.drawImage(
-        // image
-        this.spritesheet,
-        // source rectangle
-        this.frame * 64, 64, this.width, this.height,
-        // destination rectangle
-        this.x, this.y, this.width, this.height
-      );
-}
-
-},{}],5:[function(require,module,exports){
-"use strict";
-
-/**
- * @module exports the Game class
- */
-module.exports = exports = Pickup;
-/**
- * @constructor miniCar
- * Creates a new miniCar object
- * @param {Postition} position object specifying an x and y
- */
-function Pickup(position) {
-  this.x = position.x;
-  this.y = position.y;
-  this.width  = 64;
-  this.height = 64;
-  this.spritesheet  = new Image();
-  this.spritesheet.src = encodeURI('assets/TRBRYcars [Converted] pickup.svg');
-  this.timer = 0;
-  this.frame = 0;
-  this.speed = 2;
-}
-
-/**
- * @function updates the miniCar object
- * {DOMHighResTimeStamp} time the elapsed time since the last frame
- */
-Pickup.prototype.update = function(time, y) {
-// TODO: Implement your player's update by state
-      this.y -= this.speed;
-      if(this.y < 0)
-      {
-        this.y = (y - this.height);
-      }
-}
-
-Pickup.prototype.IncreaseSpeed = function()
-{
-  return speed += (level * 1);
-}
-
-Pickup.prototype.render = function(time, ctx) {
-      ctx.drawImage(
-        // image
-        this.spritesheet,
-        // source rectangle
-        this.frame * 64, 64, this.width, this.height,
-        // destination rectangle
-        this.x, this.y, this.width, this.height
-      );
-}
-
-},{}],6:[function(require,module,exports){
-"use strict";
-
 const MS_PER_FRAME = 1000/8;
 
 /**
@@ -392,6 +217,22 @@ function Player(position) {
   this.lives = 3;
   this.score = 0;
   this.level = 1;
+
+  var self = this;
+  window.onkeydown = function(e) {
+  	switch(e.which){
+  		case 38: self.moveUp();
+               self.state = "move";
+  			break;
+  		case 40: self.moveDown();
+  		 break;
+  		case 39: self.moveRight();
+  			break;
+  		case 37 : self.moveLeft();
+  			break;
+  		default : console.log('aqui');
+  	}
+  }
 }
 
 
@@ -494,20 +335,8 @@ Player.prototype.render = function(time, ctx) {
   }
 }
 
-Player.prototype.moveFrog = function(e) {
-	switch(e.which){
-		case 38: this.moveUp();
-             this.state = "move";
-			break;
-		case 40: this.moveDown();
-		 break;
-		case 39: this.moveRight();
-			break;
-		case 37 : this.moveLeft();
-			break;
-		default : console.log('aqui');
-	}
-}
+
+
 
 Player.prototype.moveUp = function() {
 	this.y -= 1;
@@ -527,112 +356,6 @@ Player.prototype.moveLeft = function () {
 Player.prototype.moveRight = function () {
 	this.x += 1;
   this.state = "idle";
-}
-
-},{}],7:[function(require,module,exports){
-"use strict";
-
-/**
- * @module exports the Game class
- */
-module.exports = exports = RacerCar;
-/**
- * @constructor miniCar
- * Creates a new miniCar object
- * @param {Postition} position object specifying an x and y
- */
-function RacerCar(position) {
-  this.x = position.x;
-  this.y = position.y;
-  this.width  = 64;
-  this.height = 64;
-  this.spritesheet  = new Image();
-  this.spritesheet.src = encodeURI('assets/cars_racer.svg');
-  this.timer = 0;
-  this.frame = 0;
-  this.speed = 5;
-}
-
-/**
- * @function updates the miniCar object
- * {DOMHighResTimeStamp} time the elapsed time since the last frame
- */
-RacerCar.prototype.update = function(time, y) {
-// TODO: Implement your player's update by state
-      this.y += this.speed;
-      if(this.y > y)
-      {
-        this.y = 0;
-      }
-}
-
-RacerCar.prototype.IncreaseSpeed = function()
-{
-  return speed += (level * 1.5);
-}
-
-RacerCar.prototype.render = function(time, ctx) {
-      ctx.drawImage(
-        // image
-        this.spritesheet,
-        // source rectangle
-        this.frame * 64, 64, this.width, this.height,
-        // destination rectangle
-        this.x, this.y, this.width, this.height
-      );
-}
-
-},{}],8:[function(require,module,exports){
-"use strict";
-
-/**
- * @module exports the Game class
- */
-module.exports = exports = Sedan;
-/**
- * @constructor miniCar
- * Creates a new miniCar object
- * @param {Postition} position object specifying an x and y
- */
-function Sedan(position) {
-  this.x = position.x;
-  this.y = position.y;
-  this.width  = 64;
-  this.height = 64;
-  this.spritesheet  = new Image();
-  this.spritesheet.src = encodeURI('assets/TRBRYcars [Converted] sedan.svg');
-  this.timer = 0;
-  this.frame = 0;
-  this.speed = 2 * Math.random();
-}
-
-/**
- * @function updates the miniCar object
- * {DOMHighResTimeStamp} time the elapsed time since the last frame
- */
-Sedan.prototype.update = function(time, y) {
-// TODO: Implement your player's update by state
-      this.y -= this.speed;
-      if(this.y < 0)
-      {
-        this.y = (y - this.height);
-      }
-}
-
-Sedan.prototype.IncreaseSpeed = function()
-{
-  return speed += (level * 1);
-}
-
-Sedan.prototype.render = function(time, ctx) {
-      ctx.drawImage(
-        // image
-        this.spritesheet,
-        // source rectangle
-        this.frame * 64, 64, this.width, this.height,
-        // destination rectangle
-        this.x, this.y, this.width, this.height
-      );
 }
 
 },{}]},{},[1]);
