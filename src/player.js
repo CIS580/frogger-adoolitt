@@ -27,21 +27,25 @@ function Player(position) {
   this.lives = 3;
   this.score = 0;
   this.level = 1;
+  this.direction = "";
 
   var self = this;
   window.onkeydown = function(e) {
   	switch(e.which){
-  		case 38: self.moveUp();
+  		case 38: self.direction = "up";
                self.state = "move";
   			break;
-  		case 40: self.moveDown();
+  		case 40: self.direction = "down";
+               self.state = "move";
   		 break;
-  		case 39: self.moveRight();
+  		case 39: self.direction = "right";
+               self.state = "move";
   			break;
-  		case 37 : this.moveLeft();
+  		case 37 : this.direction = "left";
+                this.state = "move";
   			break;
   		default : console.log('aqui');
-  	}
+    }
   }
 }
 
@@ -69,7 +73,7 @@ Player.prototype.getScore = function ()
  * @function updates the player object
  * {DOMHighResTimeStamp} time the elapsed time since the last frame
  */
-Player.prototype.update = function(time) {
+Player.prototype.update = function(time, Can_height) {
 // TODO: Implement your player's update by state
   if(this.x >= 660)
   {
@@ -85,13 +89,58 @@ Player.prototype.update = function(time) {
       }
       break;
       case "move":
-        this.moveFrog();
+        if(this.direction == "right")
+        {
+          this.x++;
+          //this.x += this.width;
+        }
+        else if(this.direction == "left")
+        {
+          if(this.x <= this.width)
+          {
+            this.x = this.width;
+          }
+          else
+          {
+            this.x -= this.width;
+          }
+        }
+        else if(this.direction == "up")
+        {
+          if(this.y < this.height)
+          {
+            this.y= this.height;
+          }
+          else
+          {
+            this.y -= this.height;
+          }
+        }
+        else if(this.direction == "down")
+        {
+          if(this.y > (Can_height - this.height))
+          {
+            this.y = Can_height - this.height;
+          }
+          else
+          {
+            this.y += this.height;
+          }
+        }
+        else
+        {
+          console.log("Invalde direction");
+        }
         this.timer += time;
-        if(this.timer > MS_PER_FRAME)
+        if(this.timer > 30)
          {
           this.timer = 0;
           this.frame += 1;
-          if(this.frame > 5) this.frame = 0;
+          if(this.frame > 5)
+          {
+            this.frame = 0;
+            this.state = "idle";
+          }
         }
         break;
       case "dead":
@@ -143,27 +192,4 @@ Player.prototype.render = function(time, ctx) {
     case "gameOver":
       break
   }
-}
-
-
-
-
-Player.prototype.moveUp = function() {
-	this.y -= 1;
-  this.state = "idle";
-}
-
-Player.prototype.moveDown = function () {
-	this.y += 1;
-  this.state = "idle";
-}
-
-Player.prototype.moveLeft = function () {
-	this.x -= 1;
-  this.state = "idle";
-}
-
-Player.prototype.moveRight = function () {
-	this.x += 1;
-  this.state = "idle";
 }
