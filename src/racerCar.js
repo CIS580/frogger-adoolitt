@@ -34,9 +34,9 @@ RacerCar.prototype.update = function(time, y) {
       }
 }
 
-RacerCar.prototype.IncreaseSpeed = function()
+RacerCar.prototype.IncreaseSpeed = function(level)
 {
-  return speed += (level * 1.5);
+  return this.speed += (level * 1.5);
 }
 
 RacerCar.prototype.render = function(time, ctx) {

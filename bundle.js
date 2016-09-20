@@ -78,7 +78,7 @@ masterLoop(performance.now());
  * the number of milliseconds passed since the last frame.
  */
 function update(elapsedTime) {
-  player.update(elapsedTime, canvas.height);
+
   miniCar.update(elapsedTime, canvas.width);
   racerCar.update(elapsedTime, canvas.width);
   sedan.update(elapsedTime, canvas.width);
@@ -86,6 +86,65 @@ function update(elapsedTime) {
   lilyPadRow1.forEach(function(lilyPad) { lilyPad.update(elapsedTime , canvas.width);});
   lilyPadRow2.forEach(function(lilyPad) { lilyPad.update(elapsedTime , canvas.width);});
   lilyPadRow3.forEach(function(lilyPad) { lilyPad.update(elapsedTime , canvas.width);});
+  player.update(elapsedTime, canvas.height);
+
+  if(player.getState() == "dead")
+  {
+    player.resetIdle(resetIdle);
+    console.log(player.lives);
+  }
+
+if(player.x > 520)
+{
+  player.onLily = false;
+  lilyPadRow1.forEach(function(lilyPad)
+  {
+    if(player.checkForCollision(player, lilyPad) && lilyPad.state == "aboveWater")
+    {
+      player.onLily = true;
+    }
+  });
+
+  lilyPadRow2.forEach(function(lilyPad)
+  {
+    if(player.checkForCollision(player, lilyPad) && lilyPad.state == "aboveWater")
+    {
+      player.onLily = true;
+    }
+  });
+
+  lilyPadRow3.forEach(function(lilyPad)
+  {
+    if(player.checkForCollision(player, lilyPad) && lilyPad.state == "aboveWater")
+    {
+      player.onLily = true;
+    }
+  });
+  if(!player.onLily)
+  {
+    player.state = "dead";
+  }
+}
+
+if(player.checkForCollision(miniCar,player))
+{
+  //player.state = "dead";
+}
+
+if(player.checkForCollision(racerCar,player))
+{
+  //player.state = "dead";
+}
+
+if(player.checkForCollision(sedan,player))
+{
+  //player.state = "dead";
+}
+
+if(player.checkForCollision(pickup,player))
+{
+  player.state = "dead";
+}
 
   if(player.getState() == "win")
   {
@@ -94,11 +153,13 @@ function update(elapsedTime) {
     sedan.IncreaseSpeed(player.getLevel());
     pickup.IncreaseSpeed(player.getLevel());
 
-    lilyPadRow1.IncreaseSpeed(player.getLevel());
-    lilyPadRow2.IncreaseSpeed(player.getLevel());
-    lilyPadRow3.IncreaseSpeed(player.getLevel());
+    lilyPadRow1.forEach(function(lilyPad) { lilyPad.decreaseTime(player.getLevel());});
+    lilyPadRow2.forEach(function(lilyPad) { lilyPad.decreaseTime(player.getLevel());});
+    lilyPadRow3.forEach(function(lilyPad) { lilyPad.decreaseTime(player.getLevel());});
 
-    player.setState(resetIdle);
+    player.resetIdle(resetIdle);
+    console.log(player.x);
+    console.log(player.y)
   }
   // TODO: Update the game objects
 }
@@ -114,7 +175,6 @@ function render(elapsedTime, ctx) {
   //ctx.fillStyle = "lightblue";
   //ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(background, 0, 0);
-  player.render(elapsedTime, ctx);
   miniCar.render(elapsedTime, ctx);
   racerCar.render(elapsedTime, ctx);
   sedan.render(elapsedTime,  ctx);
@@ -122,6 +182,7 @@ function render(elapsedTime, ctx) {
   lilyPadRow1.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
   lilyPadRow2.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
   lilyPadRow3.forEach(function(lilyPad){lilyPad.render(elapsedTime, ctx);});
+  player.render(elapsedTime, ctx);
 ctx.fillStyle = "black";
   ctx.fillText("Score:" + player.getScore(), canvas.width - 80, 10);
   ctx.fillText("Current level:" + player.getLevel(),10, 10);
@@ -293,9 +354,9 @@ MiniCar.prototype.update = function(time, y) {
       }
 }
 
-MiniCar.prototype.IncreaseSpeed = function()
+MiniCar.prototype.IncreaseSpeed = function(level)
 {
-  return speed += (level * 1);
+  return this.speed += (level * 1);
 }
 
 MiniCar.prototype.render = function(time, ctx) {
@@ -346,9 +407,9 @@ Pickup.prototype.update = function(time, y) {
       }
 }
 
-Pickup.prototype.IncreaseSpeed = function()
+Pickup.prototype.IncreaseSpeed = function(level)
 {
-  return speed += (level * 1);
+  return this.speed += (level * 1);
 }
 
 Pickup.prototype.render = function(time, ctx) {
@@ -388,11 +449,13 @@ function Player(position) {
   this.timer = 0;
   this.frame = 0;
   this.startPositionX = position.x;
-  this.startPositionX = position.y;
+  this.startPositionY = position.y;
   this.lives = 3;
   this.score = 0;
   this.level = 1;
   this.direction = "";
+  this.lastLife = false;
+  this.onLily = false;
 
   var self = this;
   window.onkeydown = function(e) {
@@ -427,7 +490,17 @@ Player.prototype.getState = function()
 
 Player.prototype.resetIdle = function(idle)
 {
-  return this.state = idle;
+  return this.state = "idle";
+}
+
+Player.prototype.checkForCollision = function(entity1, entity2) {
+  var collides = !(entity1.x + entity1.width < entity2.x ||
+                   entity1.x > entity2.x + entity2.width ||
+                   entity1.y + entity1.height < entity2.y ||
+                   entity1.y > entity2.y + entity2.height);
+  if(collides) {
+    return true;
+  }
 }
 
 Player.prototype.getScore = function ()
@@ -474,11 +547,13 @@ Player.prototype.update = function(time, Can_height) {
         {
           if(this.y < this.height)
           {
-            this.y= this.height;
+            //this.y= this.height;
+            this.y--;
           }
           else
           {
-            this.y -= this.height;
+            this.y--;
+            //this.y -= this.height;
           }
         }
         else if(this.direction == "down")
@@ -510,10 +585,19 @@ Player.prototype.update = function(time, Can_height) {
         break;
       case "dead":
         this.x = this.startPositionX;
-        this.Y = this.startPositionY;
+        this.y = this.startPositionY;
         this.lives--;
+        if(this.lastLife)
+        {
+          this.state = "gameOver";
+        }
+        if(this.lives == 0)
+        {
+          this.lastLife = true;
+        }
         break;
     case "win":
+        console.log("Inside the win case");
         this.score += 10;
         this.level++;
         this.x = this.startPositionX;
@@ -596,9 +680,9 @@ RacerCar.prototype.update = function(time, y) {
       }
 }
 
-RacerCar.prototype.IncreaseSpeed = function()
+RacerCar.prototype.IncreaseSpeed = function(level)
 {
-  return speed += (level * 1.5);
+  return this.speed += (level * 1.5);
 }
 
 RacerCar.prototype.render = function(time, ctx) {
@@ -649,9 +733,9 @@ Sedan.prototype.update = function(time, y) {
       }
 }
 
-Sedan.prototype.IncreaseSpeed = function()
+Sedan.prototype.IncreaseSpeed = function(level)
 {
-  return speed += (level * 1);
+  return this.speed += (level * 1);
 }
 
 Sedan.prototype.render = function(time, ctx) {

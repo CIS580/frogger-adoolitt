@@ -34,9 +34,9 @@ Pickup.prototype.update = function(time, y) {
       }
 }
 
-Pickup.prototype.IncreaseSpeed = function()
+Pickup.prototype.IncreaseSpeed = function(level)
 {
-  return speed += (level * 1);
+  return this.speed += (level * 1);
 }
 
 Pickup.prototype.render = function(time, ctx) {

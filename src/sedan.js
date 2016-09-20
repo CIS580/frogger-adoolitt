@@ -34,9 +34,9 @@ Sedan.prototype.update = function(time, y) {
       }
 }
 
-Sedan.prototype.IncreaseSpeed = function()
+Sedan.prototype.IncreaseSpeed = function(level)
 {
-  return speed += (level * 1);
+  return this.speed += (level * 1);
 }
 
 Sedan.prototype.render = function(time, ctx) {

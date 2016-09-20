@@ -23,11 +23,13 @@ function Player(position) {
   this.timer = 0;
   this.frame = 0;
   this.startPositionX = position.x;
-  this.startPositionX = position.y;
+  this.startPositionY = position.y;
   this.lives = 3;
   this.score = 0;
   this.level = 1;
   this.direction = "";
+  this.lastLife = false;
+  this.onLily = false;
 
   var self = this;
   window.onkeydown = function(e) {
@@ -62,7 +64,17 @@ Player.prototype.getState = function()
 
 Player.prototype.resetIdle = function(idle)
 {
-  return this.state = idle;
+  return this.state = "idle";
+}
+
+Player.prototype.checkForCollision = function(entity1, entity2) {
+  var collides = !(entity1.x + entity1.width < entity2.x ||
+                   entity1.x > entity2.x + entity2.width ||
+                   entity1.y + entity1.height < entity2.y ||
+                   entity1.y > entity2.y + entity2.height);
+  if(collides) {
+    return true;
+  }
 }
 
 Player.prototype.getScore = function ()
@@ -109,11 +121,13 @@ Player.prototype.update = function(time, Can_height) {
         {
           if(this.y < this.height)
           {
-            this.y= this.height;
+            //this.y= this.height;
+            this.y--;
           }
           else
           {
-            this.y -= this.height;
+            this.y--;
+            //this.y -= this.height;
           }
         }
         else if(this.direction == "down")
@@ -145,10 +159,19 @@ Player.prototype.update = function(time, Can_height) {
         break;
       case "dead":
         this.x = this.startPositionX;
-        this.Y = this.startPositionY;
+        this.y = this.startPositionY;
         this.lives--;
+        if(this.lastLife)
+        {
+          this.state = "gameOver";
+        }
+        if(this.lives == 0)
+        {
+          this.lastLife = true;
+        }
         break;
     case "win":
+        console.log("Inside the win case");
         this.score += 10;
         this.level++;
         this.x = this.startPositionX;

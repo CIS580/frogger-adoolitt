@@ -34,9 +34,9 @@ MiniCar.prototype.update = function(time, y) {
       }
 }
 
-MiniCar.prototype.IncreaseSpeed = function()
+MiniCar.prototype.IncreaseSpeed = function(level)
 {
-  return speed += (level * 1);
+  return this.speed += (level * 1);
 }
 
 MiniCar.prototype.render = function(time, ctx) {
