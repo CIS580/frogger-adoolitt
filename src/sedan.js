@@ -18,7 +18,7 @@ function Sedan(position) {
   this.spritesheet.src = encodeURI('assets/TRBRYcars [Converted] sedan.svg');
   this.timer = 0;
   this.frame = 0;
-  this.speed = 2 * Math.random();
+  this.speed = 2.5;
 }
 
 /**

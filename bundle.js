@@ -138,12 +138,12 @@ if(player.checkForCollision(racerCar,player))
 
 if(player.checkForCollision(sedan,player))
 {
-  //player.state = "dead";
+//  player.state = "dead";
 }
 
 if(player.checkForCollision(pickup,player))
 {
-  player.state = "dead";
+  //player.state = "dead";
 }
 
   if(player.getState() == "win")
@@ -439,7 +439,7 @@ module.exports = exports = Player;
  * @param {Postition} position object specifying an x and y
  */
 function Player(position) {
-  this.state = "idle";
+  this.state = "move";
   this.x = position.x;
   this.y = position.y;
   this.width  = 64;
@@ -456,21 +456,27 @@ function Player(position) {
   this.direction = "";
   this.lastLife = false;
   this.onLily = false;
+  this.enterMove = false;
 
   var self = this;
   window.onkeydown = function(e) {
   	switch(e.which){
   		case 38: self.direction = "up";
                self.state = "move";
+               self.enterMove = true;
   			break;
   		case 40: self.direction = "down";
                self.state = "move";
+               self.enterMove = true;
   		 break;
   		case 39: self.direction = "right";
                self.state = "move";
+               self.enterMove = true;
   			break;
-  		case 37 : this.direction = "left";
-                this.state = "move";
+  		case 37 : self.direction = "left";
+                self.state = "move";
+                self.enterMove = true;
+                console.log("In 37 left case.")
   			break;
   		default : console.log('aqui');
     }
@@ -527,62 +533,72 @@ Player.prototype.update = function(time, Can_height) {
       }
       break;
       case "move":
-        if(this.direction == "right")
+      if(this.enterMove)
+      {
+        this.frame = 0;
+        this.enterMove = false;
+      }
+      this.timer += time;
+      if(this.timer > MS_PER_FRAME)
+       {
+        this.timer = 0;
+        this.frame += 1;
+        console.log(this.frame);
+        this.x++;
+        if(this.frame > 3)
         {
+          this.frame = 0;
+          this.state = "idle";
+        }
+      }
+      if(this.direction == "right")
+      {
+        console.log(this.direction);
           this.x++;
           //this.x += this.width;
-        }
-        else if(this.direction == "left")
+      }
+      else if(this.direction == "left")
+      {
+        console.log(this.direction);
+        if(this.x <= 0)
         {
-          if(this.x <= this.width)
-          {
-            this.x = this.width;
-          }
-          else
-          {
-            this.x -= this.width;
-          }
-        }
-        else if(this.direction == "up")
-        {
-          if(this.y < this.height)
-          {
-            //this.y= this.height;
-            this.y--;
-          }
-          else
-          {
-            this.y--;
-            //this.y -= this.height;
-          }
-        }
-        else if(this.direction == "down")
-        {
-          if(this.y > (Can_height - this.height))
-          {
-            this.y = Can_height - this.height;
-          }
-          else
-          {
-            this.y += this.height;
-          }
+            this.x = 0;
         }
         else
         {
-          console.log("Invalde direction");
+            //this.x -= this.width;
+            this.x--;
         }
-        this.timer += time;
-        if(this.timer > 30)
-         {
-          this.timer = 0;
-          this.frame += 1;
-          if(this.frame > 5)
-          {
-            this.frame = 0;
-            this.state = "idle";
-          }
+      }
+      else if(this.direction == "up")
+      {
+        if(this.y <= 0)
+        {
+            this.y = 0;
         }
-        break;
+        else
+        {
+            this.y--;
+            //this.y -= this.height;
+        }
+      }
+      else if(this.direction == "down")
+      {
+        if(this.y > (Can_height - this.height))
+        {
+            this.y = Can_height - this.height;
+        }
+        else
+        {
+            //this.y += this.height;
+            this.y++;
+        }
+      }
+      else
+      {
+        console.log("Invalde direction");
+      }
+      break;
       case "dead":
         this.x = this.startPositionX;
         this.y = this.startPositionY;
@@ -626,13 +642,15 @@ Player.prototype.render = function(time, ctx) {
       );
       break;
     // TODO: Implement your player's redering according to state
-    case "moving":
+    case "move":
+    ctx.drawImage(
     // image
     this.spritesheet,
     // source rectangle
-    this.frame * 64, 64, this.width, this.height,
+    this.frame * 64, 0, this.width, this.height,
     // destination rectangle
     this.x, this.y, this.width, this.height
+  );
       break;
     case "dead":
       break;
@@ -717,7 +735,7 @@ function Sedan(position) {
   this.spritesheet.src = encodeURI('assets/TRBRYcars [Converted] sedan.svg');
   this.timer = 0;
   this.frame = 0;
-  this.speed = 2 * Math.random();
+  this.speed = 2.5;
 }
 
 /**
