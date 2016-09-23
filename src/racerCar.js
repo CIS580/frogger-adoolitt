@@ -13,9 +13,9 @@ function RacerCar(position) {
   this.x = position.x;
   this.y = position.y;
   this.width  = 64;
-  this.height = 64;
+  this.height = 126;
   this.spritesheet  = new Image();
-  this.spritesheet.src = encodeURI('assets/cars_racer.svg');
+  this.spritesheet.src = encodeURI('assets/cars_racer.png');
   this.timer = 0;
   this.frame = 0;
   this.speed = 5;
@@ -44,7 +44,7 @@ RacerCar.prototype.render = function(time, ctx) {
         // image
         this.spritesheet,
         // source rectangle
-        this.frame * 64, 64, this.width, this.height,
+        0, 0, this.width, this.height,
         // destination rectangle
         this.x, this.y, this.width, this.height
       );

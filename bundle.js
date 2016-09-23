@@ -14,7 +14,7 @@ var offSet = 64;
 var canvas = document.getElementById('screen');
 var game = new Game(canvas, update, render);
 var player = new Player({x: 0, y: 240});
-var miniCar = new MiniCar({x: 70, y:0});
+var miniCar = new MiniCar({x: 75, y:0});
 var racerCar = new RacerCar({x: 150, y:0});
 var sedan = new Sedan({x:300 , y: canvas.height - 60});
 var pickup = new Pickup({x:380, y:canvas.height - 60});
@@ -128,22 +128,22 @@ if(player.x > 520)
 
 if(player.checkForCollision(miniCar,player))
 {
-  //player.state = "dead";
+  player.state = "dead";
 }
 
 if(player.checkForCollision(racerCar,player))
 {
-  //player.state = "dead";
+  player.state = "dead";
 }
 
 if(player.checkForCollision(sedan,player))
 {
-//  player.state = "dead";
+  player.state = "dead";
 }
 
 if(player.checkForCollision(pickup,player))
 {
-  //player.state = "dead";
+  player.state = "dead";
 }
 
   if(player.getState() == "win")
@@ -186,6 +186,11 @@ function render(elapsedTime, ctx) {
 ctx.fillStyle = "black";
   ctx.fillText("Score:" + player.getScore(), canvas.width - 80, 10);
   ctx.fillText("Current level:" + player.getLevel(),10, 10);
+  ctx.fillText("Current number of lives:" + player.lives, (canvas.width / 2) , 10);
+  if(player.getState() == "gameOver")
+  {
+    ctx.fillText("Game Over! You lose.", (canvas.width / 2), (canvas.height / 2));
+  }
 }
 
 },{"./game.js":2,"./lilyPad":3,"./miniCar.js":4,"./pickup":5,"./player.js":6,"./racerCar":7,"./sedan":8}],2:[function(require,module,exports){
@@ -332,10 +337,10 @@ module.exports = exports = MiniCar;
 function MiniCar(position) {
   this.x = position.x;
   this.y = position.y;
-  this.width  = 64;
-  this.height = 64;
+  this.width  = 60;
+  this.height = 105;
   this.spritesheet  = new Image();
-  this.spritesheet.src = encodeURI('assets/cars_mini.svg');
+  this.spritesheet.src = encodeURI('assets/cars_mini.png');
   this.timer = 0;
   this.frame = 0;
   this.speed = 2;
@@ -364,7 +369,7 @@ MiniCar.prototype.render = function(time, ctx) {
         // image
         this.spritesheet,
         // source rectangle
-        this.frame * 64, 64, this.width, this.height,
+        0, 0, this.width, this.height,
         // destination rectangle
         this.x, this.y, this.width, this.height
       );
@@ -386,9 +391,9 @@ function Pickup(position) {
   this.x = position.x;
   this.y = position.y;
   this.width  = 64;
-  this.height = 64;
+  this.height = 132;
   this.spritesheet  = new Image();
-  this.spritesheet.src = encodeURI('assets/TRBRYcars [Converted] pickup.svg');
+  this.spritesheet.src = encodeURI('assets/TRBRYcars [Converted] pickup.png');
   this.timer = 0;
   this.frame = 0;
   this.speed = 2;
@@ -417,7 +422,7 @@ Pickup.prototype.render = function(time, ctx) {
         // image
         this.spritesheet,
         // source rectangle
-        this.frame * 64, 64, this.width, this.height,
+        0, 0, this.width, this.height,
         // destination rectangle
         this.x, this.y, this.width, this.height
       );
@@ -677,9 +682,9 @@ function RacerCar(position) {
   this.x = position.x;
   this.y = position.y;
   this.width  = 64;
-  this.height = 64;
+  this.height = 126;
   this.spritesheet  = new Image();
-  this.spritesheet.src = encodeURI('assets/cars_racer.svg');
+  this.spritesheet.src = encodeURI('assets/cars_racer.png');
   this.timer = 0;
   this.frame = 0;
   this.speed = 5;
@@ -708,7 +713,7 @@ RacerCar.prototype.render = function(time, ctx) {
         // image
         this.spritesheet,
         // source rectangle
-        this.frame * 64, 64, this.width, this.height,
+        0, 0, this.width, this.height,
         // destination rectangle
         this.x, this.y, this.width, this.height
       );
@@ -730,9 +735,9 @@ function Sedan(position) {
   this.x = position.x;
   this.y = position.y;
   this.width  = 64;
-  this.height = 64;
+  this.height = 135;
   this.spritesheet  = new Image();
-  this.spritesheet.src = encodeURI('assets/TRBRYcars [Converted] sedan.svg');
+  this.spritesheet.src = encodeURI('assets/TRBRYcars [Converted] sedan.png');
   this.timer = 0;
   this.frame = 0;
   this.speed = 2.5;
@@ -761,7 +766,7 @@ Sedan.prototype.render = function(time, ctx) {
         // image
         this.spritesheet,
         // source rectangle
-        this.frame * 64, 64, this.width, this.height,
+        0, 0, this.width, this.height,
         // destination rectangle
         this.x, this.y, this.width, this.height
       );

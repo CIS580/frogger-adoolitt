@@ -13,7 +13,7 @@ var offSet = 64;
 var canvas = document.getElementById('screen');
 var game = new Game(canvas, update, render);
 var player = new Player({x: 0, y: 240});
-var miniCar = new MiniCar({x: 70, y:0});
+var miniCar = new MiniCar({x: 75, y:0});
 var racerCar = new RacerCar({x: 150, y:0});
 var sedan = new Sedan({x:300 , y: canvas.height - 60});
 var pickup = new Pickup({x:380, y:canvas.height - 60});
@@ -185,4 +185,9 @@ function render(elapsedTime, ctx) {
 ctx.fillStyle = "black";
   ctx.fillText("Score:" + player.getScore(), canvas.width - 80, 10);
   ctx.fillText("Current level:" + player.getLevel(),10, 10);
+  ctx.fillText("Current number of lives:" + player.lives, (canvas.width / 2) , 10);
+  if(player.getState() == "gameOver")
+  {
+    ctx.fillText("Game Over! You lose.", (canvas.width / 2), (canvas.height / 2));
+  }
 }
